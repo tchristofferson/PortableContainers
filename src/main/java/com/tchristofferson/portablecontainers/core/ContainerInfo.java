@@ -62,8 +62,8 @@ public class ContainerInfo {
             tickManager.setEntityFurnace(entityFurnace);
         }
 
-        if (!tickManager.isTicking()) tickManager.startTicking();
         owner.openInventory(new CraftInventoryFurnace(entityFurnace));
+        if (!tickManager.isTicking()) tickManager.startTicking();
     }
 
     public void openBlastFurnace() {
@@ -74,11 +74,10 @@ public class ContainerInfo {
             tickManager.setEntityBlastFurnace(entityBlastFurnace);
         }
 
-        if (!tickManager.isTicking()) tickManager.startTicking();
         owner.openInventory(new CraftInventory(entityBlastFurnace));
+        if (!tickManager.isTicking()) tickManager.startTicking();
     }
 
-    //FIXME: tickManager cancels task right after opening
     public void openBrewingStand() {
         if (entityBrewingStand == null || !tickManager.isTicking()) {
             entityBrewingStand = new EntityBrewingStand(tickManager, owner);
@@ -87,8 +86,8 @@ public class ContainerInfo {
             tickManager.setEntityBrewingStand(entityBrewingStand);
         }
 
-        if (!tickManager.isTicking()) tickManager.startTicking();
         owner.openInventory(new CraftInventory(entityBrewingStand));
+        if (!tickManager.isTicking()) tickManager.startTicking();
     }
 
     public void openSmoker() {
@@ -99,8 +98,8 @@ public class ContainerInfo {
             tickManager.setTileEntitySmoker(tileEntitySmoker);
         }
 
-        if (!tickManager.isTicking()) tickManager.startTicking();
         owner.openInventory(new CraftInventory(tileEntitySmoker));
+        if (!tickManager.isTicking()) tickManager.startTicking();
     }
 
 }

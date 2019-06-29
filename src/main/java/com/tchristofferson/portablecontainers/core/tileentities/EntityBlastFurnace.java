@@ -1,6 +1,7 @@
 package com.tchristofferson.portablecontainers.core.tileentities;
 
 import com.tchristofferson.portablecontainers.core.TickManager;
+import net.minecraft.server.v1_14_R1.ItemStack;
 
 public class EntityBlastFurnace extends EntityFurnace {
 
@@ -11,5 +12,10 @@ public class EntityBlastFurnace extends EntityFurnace {
     @Override
     protected void setTileEntityInTickerNull() {
         tickManager.setEntityBlastFurnace(null);
+    }
+
+    @Override
+    protected int fuelTime(ItemStack itemstack) {
+        return super.fuelTime(itemstack) / 2;
     }
 }

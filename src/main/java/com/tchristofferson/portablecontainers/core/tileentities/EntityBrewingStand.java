@@ -63,7 +63,7 @@ public class EntityBrewingStand extends TileEntityBrewingStand {
 
         if (this.getViewers().isEmpty() && this.fuelLevel == 0 && (items.get(0) == ItemStack.a || items.get(0).isEmpty()) &&
                 (items.get(1) == ItemStack.a || items.get(0).isEmpty()) && (items.get(2) == ItemStack.a || items.get(2).isEmpty()) &&
-                (items.get(3) == ItemStack.a || items.get(3).isEmpty()) && items.get(4) == ItemStack.a || items.get(4).isEmpty()) {
+                (items.get(3) == ItemStack.a || items.get(3).isEmpty()) && (items.get(4) == ItemStack.a || items.get(4).isEmpty())) {
             tickManager.setEntityBrewingStand(null);
             System.out.println("TICK MANAGER BREWING STAND SET TO NULL");
         }
