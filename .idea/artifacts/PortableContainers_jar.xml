@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PortableContainers:jar">
+    <output-path>$USER_HOME$/Desktop/Test Server 1.14/plugins</output-path>
+    <root id="archive" name="PortableContainers.jar">
+      <element id="module-output" name="PortableContainers" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,57 @@
+name: PortableContainers
+version: 1.0
+api-version: 1.14
+main: com.tchristofferson.portablecontainers.PortableContainers
+
+commands:
+  penchantmenttable:
+    usage: /pEnchantmentTable
+    description: Open a virtual enchantment table
+    permission: portablecontainers.enchantmenttable
+    aliases:
+      - penchant
+  pcraftingtable:
+    usage: /pCraftingTable
+    description: Open virtual crafting table
+    permission: portablecontainers.craftingtable
+    aliases:
+      - pcraft
+  pchest:
+    usage: /pChest
+    description: Open a virtual chest
+    permission: portablecontainers.chest
+  pbarrel:
+    usage: /pBarrel
+    description: Open a virtual barrel
+    permission: portablecontainers.barrel
+  pfurnace:
+    usage: /pFurnace
+    description: Open a virtual furnace
+    permission: portablecontainers.furnace
+  pblastfurnace:
+    usage: /pBlastFurnace
+    description: Open a virual blast furnace
+    permission: portablecontainers.blastfurnace
+    aliases:
+      - pbfurnace
+  pbrewingstand:
+    usage: /pBrewingStand
+    description: Open a virtual brewing stand
+    permission: portablecontainers.brewingstand
+    aliases:
+      - pbrew
+  psmoker:
+    usage: /pSmoker
+    description: Open a virtual smoker
+    permission: portablecontainers.smoker
+  panvil:
+    usage: /pAnvil
+    description: Open a virtual anvil
+    permission: portablecontainers.anvil
+  penderchest:
+    usage: /pEnderChest
+    description: Open your virtual ender chest
+    permission: portablecontainers.enderchest
+    aliases:
+      - pender
+      - pechest
