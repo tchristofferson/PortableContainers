@@ -3,7 +3,7 @@ package com.tchristofferson.portablecontainers.core;
 import com.tchristofferson.portablecontainers.core.tileentities.EntityBlastFurnace;
 import com.tchristofferson.portablecontainers.core.tileentities.EntityBrewingStand;
 import com.tchristofferson.portablecontainers.core.tileentities.EntityFurnace;
-import net.minecraft.server.v1_14_R1.TileEntitySmoker;
+import com.tchristofferson.portablecontainers.core.tileentities.EntitySmoker;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,7 +16,7 @@ public class TickManager {
     private EntityFurnace entityFurnace;
     private EntityBlastFurnace entityBlastFurnace;
     private EntityBrewingStand entityBrewingStand;
-    private TileEntitySmoker tileEntitySmoker;
+    private EntitySmoker entitySmoker;
 
     protected TickManager(Plugin plugin) {
         this.plugin = plugin;
@@ -24,7 +24,7 @@ public class TickManager {
         this.entityFurnace = null;
         this.entityBlastFurnace = null;
         this.entityBrewingStand = null;
-        this.tileEntitySmoker = null;
+        this.entitySmoker = null;
     }
 
     public void setEntityFurnace(EntityFurnace entityFurnace) {
@@ -39,8 +39,8 @@ public class TickManager {
         this.entityBrewingStand = entityBrewingStand;
     }
 
-    public void setTileEntitySmoker(TileEntitySmoker tileEntitySmoker) {
-        this.tileEntitySmoker = tileEntitySmoker;
+    public void setEntitySmoker(EntitySmoker entitySmoker) {
+        this.entitySmoker = entitySmoker;
     }
 
     public void startTicking() {
@@ -48,7 +48,7 @@ public class TickManager {
         taskId = new BukkitRunnable() {
             @Override
             public void run() {
-                if (entityFurnace == null && entityBlastFurnace == null && entityBrewingStand == null && tileEntitySmoker == null) {
+                if (entityFurnace == null && entityBlastFurnace == null && entityBrewingStand == null && entitySmoker == null) {
                     TickManager.this.stopTicking();
                     return;
                 }
@@ -56,7 +56,7 @@ public class TickManager {
                 if (entityFurnace != null) entityFurnace.tick();
                 if (entityBlastFurnace != null) entityBlastFurnace.tick();
                 if (entityBrewingStand != null) entityBrewingStand.tick();
-                //TODO: if (entitySmoker != null) entitySmoker.tick();
+                if (entitySmoker != null) entitySmoker.tick();
             }
         }.runTaskTimer(plugin, 1, 1).getTaskId();
     }

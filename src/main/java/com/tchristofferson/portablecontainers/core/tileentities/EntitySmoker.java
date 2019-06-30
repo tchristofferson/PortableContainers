@@ -1,20 +1,19 @@
 package com.tchristofferson.portablecontainers.core.tileentities;
 
 import com.tchristofferson.portablecontainers.core.TickManager;
-import net.minecraft.server.v1_14_R1.TileEntitySmoker;
+import net.minecraft.server.v1_14_R1.Recipes;
+import net.minecraft.server.v1_14_R1.TileEntityTypes;
 
-public class EntitySmoker extends TileEntitySmoker {
-
-    private final TickManager tickManager;
+public class EntitySmoker extends EntityBlastFurnace {
 
     public EntitySmoker(TickManager tickManager) {
-        super();
-        this.tickManager = tickManager;
+        super(tickManager, TileEntityTypes.SMOKER, Recipes.SMOKING);
     }
 
     @Override
-    public void tick() {
-        //TODO
+    protected void setTileEntityInTickerNull() {
+        tickManager.setEntitySmoker(null);
+        System.out.println("SET TICK MANAGER SMOKER TO NULL");
     }
 
 }

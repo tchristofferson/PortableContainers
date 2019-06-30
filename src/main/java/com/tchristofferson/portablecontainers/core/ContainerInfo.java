@@ -4,12 +4,12 @@ import com.tchristofferson.portablecontainers.PortableContainers;
 import com.tchristofferson.portablecontainers.core.tileentities.EntityBlastFurnace;
 import com.tchristofferson.portablecontainers.core.tileentities.EntityBrewingStand;
 import com.tchristofferson.portablecontainers.core.tileentities.EntityFurnace;
-import net.minecraft.server.v1_14_R1.*;
+import com.tchristofferson.portablecontainers.core.tileentities.EntitySmoker;
+import net.minecraft.server.v1_14_R1.Container;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftInventoryFurnace;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.util.CraftTileInventoryConverter;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftInventoryBrewer;
 import org.bukkit.craftbukkit.v1_14_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -26,14 +26,14 @@ public class ContainerInfo {
     private EntityFurnace entityFurnace;
     private EntityBlastFurnace entityBlastFurnace;
     private EntityBrewingStand entityBrewingStand;
-    private TileEntitySmoker tileEntitySmoker;
+    private EntitySmoker entitySmoker;
 
     public ContainerInfo(PortableContainers plugin, Player owner) {
 
         entityFurnace = null;
         entityBlastFurnace = null;
         entityBrewingStand = null;
-        tileEntitySmoker = null;
+        entitySmoker = null;
 
         this.owner = owner;
         this.tickManager = new TickManager(plugin);
@@ -62,8 +62,11 @@ public class ContainerInfo {
             tickManager.setEntityFurnace(entityFurnace);
         }
 
-        owner.openInventory(new CraftInventoryFurnace(entityFurnace));
         if (!tickManager.isTicking()) tickManager.startTicking();
+        CraftPlayer player = (CraftPlayer) owner;
+        Container formerContainer = player.getHandle().activeContainer;
+        ((CraftPlayer) owner).getHandle().openContainer(entityFurnace);
+        if (player.getHandle().activeContainer != formerContainer) player.getHandle().activeContainer.checkReachable = false;
     }
 
     public void openBlastFurnace() {
@@ -74,8 +77,11 @@ public class ContainerInfo {
             tickManager.setEntityBlastFurnace(entityBlastFurnace);
         }
 
-        owner.openInventory(new CraftInventory(entityBlastFurnace));
         if (!tickManager.isTicking()) tickManager.startTicking();
+        CraftPlayer player = (CraftPlayer) owner;
+        Container formerContainer = player.getHandle().activeContainer;
+        ((CraftPlayer) owner).getHandle().openContainer(entityBlastFurnace);
+        if (player.getHandle().activeContainer != formerContainer) player.getHandle().activeContainer.checkReachable = false;
     }
 
     public void openBrewingStand() {
@@ -86,20 +92,23 @@ public class ContainerInfo {
             tickManager.setEntityBrewingStand(entityBrewingStand);
         }
 
-        owner.openInventory(new CraftInventory(entityBrewingStand));
         if (!tickManager.isTicking()) tickManager.startTicking();
+        owner.openInventory(new CraftInventoryBrewer(entityBrewingStand));
     }
 
     public void openSmoker() {
-        if (tileEntitySmoker == null || !tickManager.isTicking()) {
-            CraftTileInventoryConverter.Smoker smokerCreator = new CraftTileInventoryConverter.Smoker();
-            tileEntitySmoker = (TileEntitySmoker) smokerCreator.getTileEntity();
-            tileEntitySmoker.setCustomName(CraftChatMessage.fromStringOrNull(InventoryType.SMOKER.getDefaultTitle()));
-            tickManager.setTileEntitySmoker(tileEntitySmoker);
+        if (entitySmoker == null || !tickManager.isTicking()) {
+            entitySmoker = new EntitySmoker(tickManager);
+            entitySmoker.setCustomName(CraftChatMessage.fromStringOrNull(InventoryType.SMOKER.getDefaultTitle()));
+            entitySmoker.setWorld(((CraftWorld) owner.getWorld()).getHandle());
+            tickManager.setEntitySmoker(entitySmoker);
         }
 
-        owner.openInventory(new CraftInventory(tileEntitySmoker));
         if (!tickManager.isTicking()) tickManager.startTicking();
+        CraftPlayer player = (CraftPlayer) owner;
+        Container formerContainer = player.getHandle().activeContainer;
+        ((CraftPlayer) owner).getHandle().openContainer(entitySmoker);
+        if (player.getHandle().activeContainer != formerContainer) player.getHandle().activeContainer.checkReachable = false;
     }
 
 }
