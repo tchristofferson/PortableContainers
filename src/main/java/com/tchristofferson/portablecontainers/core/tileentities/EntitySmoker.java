@@ -13,7 +13,6 @@ public class EntitySmoker extends EntityBlastFurnace {
     @Override
     protected void setTileEntityInTickerNull() {
         tickManager.setEntitySmoker(null);
-        System.out.println("SET TICK MANAGER SMOKER TO NULL");
     }
 
 }

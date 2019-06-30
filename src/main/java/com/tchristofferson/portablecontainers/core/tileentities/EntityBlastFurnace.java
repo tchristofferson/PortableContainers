@@ -19,7 +19,6 @@ public class EntityBlastFurnace extends EntityFurnace {
     @Override
     protected void setTileEntityInTickerNull() {
         tickManager.setEntityBlastFurnace(null);
-        System.out.println("SET TICK MANAGER BLAST FURNACE TO NULL");
     }
 
     @Override

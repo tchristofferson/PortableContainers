@@ -76,7 +76,6 @@ public class EntityFurnace extends TileEntityFurnace {
 
     protected void setTileEntityInTickerNull() {
         tickManager.setEntityFurnace(null);
-        System.out.println("SET TICK MANAGER FURNACE TO NULL");
     }
 
     private boolean isBurning() {
