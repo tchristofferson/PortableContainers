@@ -8,48 +8,33 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class TickManager {
 
     private final Plugin plugin;
+    private final Map<UUID, Integer> taskIds;
 
-    private int taskId;
-    private EntityFurnace entityFurnace;
-    private EntityBlastFurnace entityBlastFurnace;
-    private EntityBrewingStand entityBrewingStand;
-    private EntitySmoker entitySmoker;
-
-    protected TickManager(Plugin plugin) {
+    public TickManager(Plugin plugin) {
         this.plugin = plugin;
-        this.taskId = -1;
-        this.entityFurnace = null;
-        this.entityBlastFurnace = null;
-        this.entityBrewingStand = null;
-        this.entitySmoker = null;
+        this.taskIds = new HashMap<>();
     }
 
-    public void setEntityFurnace(EntityFurnace entityFurnace) {
-        this.entityFurnace = entityFurnace;
-    }
+    public void startTicking(ContainerInfo containerInfo) {
+        if (taskIds.containsKey(containerInfo.getOwner().getUniqueId())) throw new IllegalStateException("TickManager is already ticking for specified container info");
 
-    public void setEntityBlastFurnace(EntityBlastFurnace entityBlastFurnace) {
-        this.entityBlastFurnace = entityBlastFurnace;
-    }
+        EntityFurnace entityFurnace = containerInfo.getEntityFurnace();
+        EntityBlastFurnace entityBlastFurnace = containerInfo.getEntityBlastFurnace();
+        EntityBrewingStand entityBrewingStand = containerInfo.getEntityBrewingStand();
+        EntitySmoker entitySmoker = containerInfo.getEntitySmoker();
 
-    public void setEntityBrewingStand(EntityBrewingStand entityBrewingStand) {
-        this.entityBrewingStand = entityBrewingStand;
-    }
-
-    public void setEntitySmoker(EntitySmoker entitySmoker) {
-        this.entitySmoker = entitySmoker;
-    }
-
-    public void startTicking() {
-        if (isTicking()) throw new IllegalStateException("TickManager is already ticking");
-        taskId = new BukkitRunnable() {
+        int taskId = new BukkitRunnable() {
             @Override
             public void run() {
                 if (entityFurnace == null && entityBlastFurnace == null && entityBrewingStand == null && entitySmoker == null) {
-                    TickManager.this.stopTicking();
+                    TickManager.this.stopTicking(containerInfo);
                     return;
                 }
 
@@ -59,16 +44,18 @@ public class TickManager {
                 if (entitySmoker != null) entitySmoker.tick();
             }
         }.runTaskTimer(plugin, 1, 1).getTaskId();
+
+        taskIds.put(containerInfo.getOwner().getUniqueId(), taskId);
     }
 
-    public void stopTicking() {
-        if (!isTicking()) return;
-        Bukkit.getScheduler().cancelTask(taskId);
-        taskId = -1;
+    public void stopTicking(ContainerInfo containerInfo) {
+        Integer taskId = taskIds.remove(containerInfo.getOwner().getUniqueId());
+        if (taskId != null) {
+            Bukkit.getScheduler().cancelTask(taskId);
+        }
     }
 
-    public boolean isTicking() {
-        return taskId != -1;
+    public boolean isTicking(UUID uuid) {
+        return taskIds.containsKey(uuid);
     }
-
 }

@@ -20,8 +20,8 @@ public class ContainerInfo {
     private final Player owner;
     private final TickManager tickManager;
 
-    private final Inventory chest;
-    private final Inventory barrel;
+    private Inventory chest;
+    private Inventory barrel;
 
     private EntityFurnace entityFurnace;
     private EntityBlastFurnace entityBlastFurnace;
@@ -36,7 +36,7 @@ public class ContainerInfo {
         entitySmoker = null;
 
         this.owner = owner;
-        this.tickManager = new TickManager(plugin);
+        this.tickManager = plugin.getTickManager();
 
         chest = Bukkit.createInventory(owner, 54, InventoryType.CHEST.getDefaultTitle());
         barrel = Bukkit.createInventory(owner, InventoryType.BARREL);
@@ -55,60 +55,109 @@ public class ContainerInfo {
     }
 
     public void openFurnace() {
-        if (entityFurnace == null || !tickManager.isTicking()) {
-            entityFurnace = new EntityFurnace(tickManager);
+        boolean notTicking = !tickManager.isTicking(owner.getUniqueId());
+        if (entityFurnace == null || notTicking) {
+            entityFurnace = new EntityFurnace(this);
             entityFurnace.setCustomName(CraftChatMessage.fromStringOrNull(InventoryType.FURNACE.getDefaultTitle()));
             entityFurnace.setWorld(((CraftWorld) owner.getWorld()).getHandle());
-            tickManager.setEntityFurnace(entityFurnace);
         }
 
-        if (!tickManager.isTicking()) tickManager.startTicking();
-        CraftPlayer player = (CraftPlayer) owner;
-        Container formerContainer = player.getHandle().activeContainer;
-        ((CraftPlayer) owner).getHandle().openContainer(entityFurnace);
-        if (player.getHandle().activeContainer != formerContainer) player.getHandle().activeContainer.checkReachable = false;
+        if (notTicking) tickManager.startTicking(this);
+        openFurnace(entityFurnace);
     }
 
     public void openBlastFurnace() {
-        if (entityBlastFurnace == null || !tickManager.isTicking()) {
-            entityBlastFurnace = new EntityBlastFurnace(tickManager);
+        boolean notTicking = !tickManager.isTicking(owner.getUniqueId());
+        if (entityBlastFurnace == null || notTicking) {
+            entityBlastFurnace = new EntityBlastFurnace(this);
             entityBlastFurnace.setCustomName(CraftChatMessage.fromStringOrNull(InventoryType.BLAST_FURNACE.getDefaultTitle()));
             entityBlastFurnace.setWorld(((CraftWorld) owner.getWorld()).getHandle());
-            tickManager.setEntityBlastFurnace(entityBlastFurnace);
         }
 
-        if (!tickManager.isTicking()) tickManager.startTicking();
-        CraftPlayer player = (CraftPlayer) owner;
-        Container formerContainer = player.getHandle().activeContainer;
-        ((CraftPlayer) owner).getHandle().openContainer(entityBlastFurnace);
-        if (player.getHandle().activeContainer != formerContainer) player.getHandle().activeContainer.checkReachable = false;
+        if (notTicking) tickManager.startTicking(this);
+        openFurnace(entityBlastFurnace);
     }
 
     public void openBrewingStand() {
-        if (entityBrewingStand == null || !tickManager.isTicking()) {
-            entityBrewingStand = new EntityBrewingStand(tickManager, owner);
+        boolean notTicking = !tickManager.isTicking(owner.getUniqueId());
+        if (entityBrewingStand == null || notTicking) {
+            entityBrewingStand = new EntityBrewingStand(this, owner);
             entityBrewingStand.setCustomName(CraftChatMessage.fromStringOrNull(InventoryType.BREWING.getDefaultTitle()));
             entityBrewingStand.setWorld(((CraftWorld) owner.getWorld()).getHandle());
-            tickManager.setEntityBrewingStand(entityBrewingStand);
         }
 
-        if (!tickManager.isTicking()) tickManager.startTicking();
+        if (notTicking) tickManager.startTicking(this);
         owner.openInventory(new CraftInventoryBrewer(entityBrewingStand));
     }
 
     public void openSmoker() {
-        if (entitySmoker == null || !tickManager.isTicking()) {
-            entitySmoker = new EntitySmoker(tickManager);
+        boolean notTicking = !tickManager.isTicking(owner.getUniqueId());
+        if (entitySmoker == null || notTicking) {
+            entitySmoker = new EntitySmoker(this);
             entitySmoker.setCustomName(CraftChatMessage.fromStringOrNull(InventoryType.SMOKER.getDefaultTitle()));
             entitySmoker.setWorld(((CraftWorld) owner.getWorld()).getHandle());
-            tickManager.setEntitySmoker(entitySmoker);
         }
 
-        if (!tickManager.isTicking()) tickManager.startTicking();
-        CraftPlayer player = (CraftPlayer) owner;
-        Container formerContainer = player.getHandle().activeContainer;
-        ((CraftPlayer) owner).getHandle().openContainer(entitySmoker);
-        if (player.getHandle().activeContainer != formerContainer) player.getHandle().activeContainer.checkReachable = false;
+        if (notTicking) tickManager.startTicking(this);
+        openFurnace(entitySmoker);
     }
 
+    public Player getOwner() {
+        return owner;
+    }
+
+    public Inventory getChest() {
+        return chest;
+    }
+
+    public Inventory getBarrel() {
+        return barrel;
+    }
+
+    public EntityFurnace getEntityFurnace() {
+        return entityFurnace;
+    }
+
+    public EntityBlastFurnace getEntityBlastFurnace() {
+        return entityBlastFurnace;
+    }
+
+    public EntityBrewingStand getEntityBrewingStand() {
+        return entityBrewingStand;
+    }
+
+    public EntitySmoker getEntitySmoker() {
+        return entitySmoker;
+    }
+
+    public void setChest(Inventory chest) {
+        this.chest = chest;
+    }
+
+    public void setBarrel(Inventory barrel) {
+        this.barrel = barrel;
+    }
+
+    public void setEntityFurnace(EntityFurnace entityFurnace) {
+        this.entityFurnace = entityFurnace;
+    }
+
+    public void setEntityBlastFurnace(EntityBlastFurnace entityBlastFurnace) {
+        this.entityBlastFurnace = entityBlastFurnace;
+    }
+
+    public void setEntityBrewingStand(EntityBrewingStand entityBrewingStand) {
+        this.entityBrewingStand = entityBrewingStand;
+    }
+
+    public void setEntitySmoker(EntitySmoker entitySmoker) {
+        this.entitySmoker = entitySmoker;
+    }
+
+    private void openFurnace(EntityFurnace entityFurnace) {
+        CraftPlayer craftPlayer = (CraftPlayer) owner;
+        Container formerContainer = craftPlayer.getHandle().activeContainer;
+        ((CraftPlayer) owner).getHandle().openContainer(entityFurnace);
+        if (craftPlayer.getHandle().activeContainer != formerContainer) craftPlayer.getHandle().activeContainer.checkReachable = false;
+    }
 }

@@ -1,36 +1,41 @@
 package com.tchristofferson.portablecontainers.core.tileentities;
 
-import com.tchristofferson.portablecontainers.core.TickManager;
-import com.tchristofferson.portablecontainers.events.PortableBrewEvent;
-import com.tchristofferson.portablecontainers.events.PortableBrewingStandFuelEvent;
+import com.tchristofferson.portablecontainers.core.ContainerInfo;
 import net.minecraft.server.v1_14_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftInventoryBrewer;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.event.inventory.BrewingStandFuelEvent;
 import org.bukkit.inventory.Inventory;
 
-public class EntityBrewingStand extends TileEntityBrewingStand {
+public class EntityBrewingStand extends TileEntityBrewingStand implements IEntityContainer {
 
-    private final TickManager tickManager;
+    private final ContainerInfo containerInfo;
     private NonNullList<ItemStack> items;
     private int lastTick;
     private Player owner;
     private Item k;
 
-    public EntityBrewingStand(TickManager tickManager, Player owner) {
+    public EntityBrewingStand(ContainerInfo containerInfo, Player owner) {
         super();
-        this.tickManager = tickManager;
+        this.containerInfo = containerInfo;
         this.items = NonNullList.a(5, ItemStack.a);
         this.lastTick = MinecraftServer.currentTick;
         this.owner = owner;
     }
 
     @Override
+    public EntityTypes getType() {
+        return EntityTypes.BREWING_STAND;
+    }
+
+    @Override
     public void tick() {
         ItemStack itemstack = this.items.get(4);
         if (this.fuelLevel <= 0 && itemstack.getItem() == Items.BLAZE_POWDER) {
-            PortableBrewingStandFuelEvent event = new PortableBrewingStandFuelEvent(CraftItemStack.asCraftMirror(itemstack), 20);
+            BrewingStandFuelEvent event = new BrewingStandFuelEvent(this.world.getWorld().getBlockAt(this.position.getX(), this.position.getY(), this.position.getZ()), CraftItemStack.asCraftMirror(itemstack), 20);
             this.world.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) return;
 
@@ -64,8 +69,7 @@ public class EntityBrewingStand extends TileEntityBrewingStand {
         if (this.getViewers().isEmpty() && this.fuelLevel == 0 && (items.get(0) == ItemStack.a || items.get(0).isEmpty()) &&
                 (items.get(1) == ItemStack.a || items.get(0).isEmpty()) && (items.get(2) == ItemStack.a || items.get(2).isEmpty()) &&
                 (items.get(3) == ItemStack.a || items.get(3).isEmpty()) && (items.get(4) == ItemStack.a || items.get(4).isEmpty())) {
-            tickManager.setEntityBrewingStand(null);
-            System.out.println("TICK MANAGER BREWING STAND SET TO NULL");
+            containerInfo.setEntityBrewingStand(null);
         }
     }
 
@@ -141,7 +145,7 @@ public class EntityBrewingStand extends TileEntityBrewingStand {
 
     private void s() {
         ItemStack itemstack = this.items.get(3);
-        PortableBrewEvent event = new PortableBrewEvent(new CraftInventoryBrewer(this), this.fuelLevel);
+        BrewEvent event = new BrewEvent(world.getWorld().getBlockAt(this.position.getX(), this.position.getY(), this.position.getZ()), new CraftInventoryBrewer(this), this.fuelLevel);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 

@@ -1,26 +1,30 @@
 package com.tchristofferson.portablecontainers.core.tileentities;
 
-import com.tchristofferson.portablecontainers.core.TickManager;
-import com.tchristofferson.portablecontainers.events.PortableFurnaceBurnEvent;
-import com.tchristofferson.portablecontainers.events.PortableFurnaceSmeltEvent;
+import com.tchristofferson.portablecontainers.core.ContainerInfo;
 import net.minecraft.server.v1_14_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_14_R1.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
 
-public class EntityFurnace extends TileEntityFurnace {
+public class EntityFurnace extends TileEntityFurnace implements IEntityContainer {
 
-    final TickManager tickManager;
+    final ContainerInfo containerInfo;
 
-    public EntityFurnace(TickManager tickManager) {
+    public EntityFurnace(ContainerInfo containerInfo) {
         super(TileEntityTypes.FURNACE, Recipes.SMELTING);
-        this.tickManager = tickManager;
+        this.containerInfo = containerInfo;
     }
 
-    protected EntityFurnace(TickManager tickManager, TileEntityTypes<?> tileentitytypes, Recipes<? extends RecipeCooking> recipes) {
+    protected EntityFurnace(ContainerInfo containerInfo, TileEntityTypes<?> tileentitytypes, Recipes<? extends RecipeCooking> recipes) {
         super(tileentitytypes, recipes);
-        this.tickManager = tickManager;
+        this.containerInfo = containerInfo;
+    }
+
+    @Override
+    public EntityTypes getType() {
+        return EntityTypes.FURNACE;
     }
 
     @Override
@@ -70,12 +74,12 @@ public class EntityFurnace extends TileEntityFurnace {
 
         if (this.getViewers().isEmpty() && !isBurning() && (this.getItem(0) == ItemStack.a || this.getItem(0).isEmpty()) &&
                 (this.getItem(1) == ItemStack.a || this.getItem(1).isEmpty()) && (this.getItem(2) == ItemStack.a || this.getItem(2).isEmpty())) {
-            setTileEntityInTickerNull();
+            setTileEntityInContainerInfoNull();
         }
     }
 
-    protected void setTileEntityInTickerNull() {
-        tickManager.setEntityFurnace(null);
+    protected void setTileEntityInContainerInfoNull() {
+        containerInfo.setEntityFurnace(null);
     }
 
     private boolean isBurning() {
@@ -89,7 +93,7 @@ public class EntityFurnace extends TileEntityFurnace {
             ItemStack itemstack2 = this.items.get(2);
             CraftItemStack source = CraftItemStack.asCraftMirror(itemstack);
             org.bukkit.inventory.ItemStack result = CraftItemStack.asBukkitCopy(itemstack1);
-            PortableFurnaceSmeltEvent furnaceSmeltEvent = new PortableFurnaceSmeltEvent(source, result);
+            FurnaceSmeltEvent furnaceSmeltEvent = new FurnaceSmeltEvent(this.world.getWorld().getBlockAt(this.position.getX(), this.position.getY(), this.position.getZ()), source, result);
             Bukkit.getPluginManager().callEvent(furnaceSmeltEvent);
             if (furnaceSmeltEvent.isCancelled()) {
                 return;
@@ -120,6 +124,10 @@ public class EntityFurnace extends TileEntityFurnace {
             itemstack.subtract(1);
         }
 
+    }
+
+    public int getProperty(int i) {
+        return this.b.getProperty(i);
     }
 
     @Override
